@@ -23,7 +23,7 @@ CollabSphere is a portfolio-grade MERN SaaS workspace inspired by Slack, Notion,
 - Trello-style Kanban board with drag and drop, priorities, due dates, assignees, labels, comments, progress tracking, and live task updates
 - File hub for images, documents, previews, downloads, Cloudinary-ready uploads, and link sharing
 - Activity timeline for task, message, file, join, and workspace events
-- AI summarizer, AI smart task generator, and productivity insights with no-key fallback logic
+- AI summarizer, meeting notes, smart task generator, floating assistant, slash commands, smart replies, recommendations, and productivity insights with no-key fallback logic
 - Analytics dashboard with active users, task metrics, priority distribution, productivity charts, recent activity, and deadlines
 - Dark/light mode, collapsible sidebar, mobile navigation, loading skeletons, empty states, glass UI, Framer Motion transitions, and responsive layouts
 - Backend hardening with Helmet, CORS controls, rate limiting, Morgan logging, centralized error handling, and Zod environment validation
@@ -60,14 +60,14 @@ Base URL: `http://localhost:5011/api`
 
 | Area | Endpoints |
 | --- | --- |
-| Auth | `POST /auth/signup`, `POST /auth/login`, `GET /auth/me`, `POST /auth/logout` |
+| Auth | `POST /auth/signup`, `POST /auth/login`, `POST /auth/refresh`, `GET /auth/me`, `POST /auth/logout`, `POST /auth/logout-all` |
 | Workspaces | `GET /workspaces`, `POST /workspaces`, `POST /workspaces/join`, `GET /workspaces/:id`, `PATCH /workspaces/:id` |
 | Tasks | `GET /tasks/:workspaceId`, `POST /tasks/:workspaceId`, `PATCH /tasks/:workspaceId/:taskId`, `DELETE /tasks/:workspaceId/:taskId` |
 | Messages | `GET /messages/:workspaceId`, `POST /messages/:workspaceId`, `PATCH /messages/:workspaceId/:messageId/pin` |
 | Files | `GET /files/:workspaceId`, `POST /files/:workspaceId` |
 | Notifications | `GET /notifications`, `PATCH /notifications/read-all`, `PATCH /notifications/:id/read` |
 | Analytics | `GET /analytics/:workspaceId/dashboard` |
-| AI | `POST /ai/summarize`, `POST /ai/smart-tasks`, `GET /ai/:workspaceId/insights` |
+| AI | `POST /ai/summarize`, `POST /ai/smart-tasks`, `POST /ai/meeting-notes`, `POST /ai/smart-replies`, `POST /ai/slash-command`, `GET /ai/:workspaceId/insights`, `GET /ai/:workspaceId/recommendations`, `POST /ai/:workspaceId/assistant` |
 
 Socket events include `workspace:join`, `message:send`, `message:new`, `typing:start`, `typing:stop`, `presence:update`, `task:created`, `task:updated`, `file:new`, and `activity:new`.
 
@@ -91,6 +91,8 @@ JWT_SECRET=replace-with-a-long-random-secret
 JWT_EXPIRES_IN=7d
 CLIENT_URL=http://localhost:5188
 CLIENT_ORIGINS=http://localhost:5188
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 Seed demo data:
@@ -134,6 +136,8 @@ JWT_SECRET=replace-with-a-long-random-production-secret
 JWT_EXPIRES_IN=7d
 CLIENT_URL=https://your-render-frontend.onrender.com
 CLIENT_ORIGINS=https://your-render-frontend.onrender.com
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 ### Frontend Static Site
@@ -167,12 +171,12 @@ Add screenshots after deploying:
 - JWT secret and Mongo URI are required in production.
 - Environment variables are validated with Zod on backend startup.
 - File uploads use local storage in development and Cloudinary in production when Cloudinary env keys are set.
-- AI features include deterministic fallback responses; OpenAI/Gemini can be wired through `server/services/aiService.js`.
+- AI features use OpenAI when `OPENAI_API_KEY` is configured and automatically fall back to deterministic workspace-aware responses when it is not.
 - `client/vercel.json`, `server/render.yaml`, and `server/Procfile` are included for deployment readiness.
 
 ## Future Roadmap
 
-- Refresh token rotation with HTTP-only cookies
+- Collaborative whiteboard and live cursors
 - Google OAuth and SSO
 - dnd-kit sortable Kanban columns
 - Video/audio meeting rooms with screen sharing

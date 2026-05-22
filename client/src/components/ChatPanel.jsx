@@ -1,25 +1,51 @@
 import { motion } from 'framer-motion';
-import { Hash, MessageSquareText, Paperclip, Pin, Send, SmilePlus, UsersRound } from 'lucide-react';
+import { Bot, Hash, MessageSquareText, Paperclip, Pin, Send, SmilePlus, Sparkles, UsersRound } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import EmptyState from './EmptyState';
 import { formatTime } from '../utils/format';
 
-export default function ChatPanel({ messages, workspace, user, typingUsers, onSendMessage, onTyping }) {
+const slashCommands = [
+  { command: '/summarize', label: 'Summarize recent channel context' },
+  { command: '/tasks Build onboarding flow', label: 'Generate execution-ready tasks' },
+  { command: '/standup', label: 'Draft an async standup update' }
+];
+
+export default function ChatPanel({ messages, workspace, user, typingUsers, onSendMessage, onTyping, onSlashCommand, onSmartReply }) {
   const [draft, setDraft] = useState('');
+  const [aiBusy, setAiBusy] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     if (!draft.trim()) return;
-    onSendMessage(draft.trim());
+    if (draft.trim().startsWith('/') && onSlashCommand) {
+      setAiBusy(true);
+      const result = await onSlashCommand(draft.trim());
+      setAiBusy(false);
+      if (typeof result === 'string') {
+        onSendMessage(result);
+      }
+      setDraft('');
+      return;
+    }
+    await onSendMessage(draft.trim());
     setDraft('');
   };
 
+  const requestSmartReply = async () => {
+    if (!onSmartReply || aiBusy) return;
+    setAiBusy(true);
+    const reply = await onSmartReply(messages.slice(-8));
+    setAiBusy(false);
+    if (reply) setDraft(reply);
+  };
+
   const pinned = messages.filter((message) => message.pinned);
+  const showSlashMenu = draft.startsWith('/');
 
   return (
     <div className="grid min-h-[calc(100vh-9rem)] gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
@@ -65,6 +91,24 @@ export default function ChatPanel({ messages, workspace, user, typingUsers, onSe
 
         <div className="border-t border-slate-200 p-4 dark:border-white/10">
           {typingUsers.length > 0 && <p className="mb-2 text-xs font-medium text-cyan-600 dark:text-cyan-300">{typingUsers.join(', ')} typing...</p>}
+          {showSlashMenu && (
+            <div className="mb-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-slate-950">
+              {slashCommands.map((item) => (
+                <button
+                  key={item.command}
+                  type="button"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm transition hover:bg-slate-100 dark:hover:bg-white/10"
+                  onClick={() => setDraft(item.command)}
+                >
+                  <Sparkles className="h-4 w-4 text-cyan-500" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-bold">{item.command}</span>
+                    <span className="block truncate text-xs text-slate-500 dark:text-slate-400">{item.label}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
           <form onSubmit={submit} className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2 dark:border-white/10 dark:bg-slate-950/70">
             <button type="button" className="icon-btn border-0 bg-transparent" aria-label="Attach file"><Paperclip className="h-5 w-5" /></button>
             <input
@@ -74,8 +118,11 @@ export default function ChatPanel({ messages, workspace, user, typingUsers, onSe
                 setDraft(event.target.value);
                 onTyping?.();
               }}
-              placeholder="Message #general"
+              placeholder="Message #general or type / for AI commands"
             />
+            <button type="button" className="icon-btn border-0 bg-transparent" aria-label="Draft smart reply" onClick={requestSmartReply} disabled={aiBusy}>
+              <Bot className={`h-5 w-5 ${aiBusy ? 'animate-pulse text-cyan-500' : ''}`} />
+            </button>
             <button type="button" className="icon-btn border-0 bg-transparent" aria-label="Emoji"><SmilePlus className="h-5 w-5" /></button>
             <button className="grid h-10 w-10 place-items-center rounded-xl bg-slate-950 text-white dark:bg-white dark:text-slate-950" aria-label="Send message"><Send className="h-4 w-4" /></button>
           </form>

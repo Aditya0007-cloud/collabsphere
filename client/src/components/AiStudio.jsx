@@ -1,10 +1,11 @@
-import { BrainCircuit, Lightbulb, ListChecks, Plus, Sparkles } from 'lucide-react';
+import { BrainCircuit, FileText, Lightbulb, ListChecks, Plus, Sparkles } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
-export default function AiStudio({ tasks, activities, onSummarize, onSmartTasks, onAddPlanToBoard, insights }) {
+export default function AiStudio({ tasks, activities, onSummarize, onSmartTasks, onMeetingNotes, onAddPlanToBoard, insights }) {
   const [notes, setNotes] = useState('Launch login page, add protected routes, validate JWT sessions, and polish onboarding copy before Friday review.');
   const [prompt, setPrompt] = useState('Build login page');
   const [summary, setSummary] = useState('');
+  const [meetingNotes, setMeetingNotes] = useState(null);
   const [plan, setPlan] = useState(null);
   const completion = useMemo(() => {
     const done = tasks.filter((task) => task.status === 'completed').length;
@@ -31,7 +32,32 @@ export default function AiStudio({ tasks, activities, onSummarize, onSmartTasks,
           <Sparkles className="h-4 w-4" />
           Summarize
         </button>
+        <button
+          className="btn-soft ml-2 mt-4"
+          onClick={async () => setMeetingNotes(await onMeetingNotes(notes))}
+        >
+          <FileText className="h-4 w-4" />
+          Meeting notes
+        </button>
         {summary && <div className="mt-5 rounded-3xl border border-cyan-200 bg-cyan-50 p-5 leading-7 text-cyan-950 dark:border-cyan-400/20 dark:bg-cyan-400/10 dark:text-cyan-50">{summary}</div>}
+        {meetingNotes && (
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {[
+              ['Decisions', meetingNotes.decisions],
+              ['Action items', meetingNotes.actionItems],
+              ['Blockers', meetingNotes.blockers]
+            ].map(([title, items]) => (
+              <div key={title} className="rounded-2xl border border-slate-200 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                <p className="font-bold">{title}</p>
+                <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
+                  {(items?.length ? items : ['None detected']).map((item) => (
+                    <li key={item}>• {item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="view-shell">

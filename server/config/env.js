@@ -24,6 +24,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(24, 'JWT_SECRET must be at least 24 characters long').default('development-collabsphere-secret'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   OPENAI_API_KEY: z.string().optional(),
+  OPENAI_MODEL: z.string().default('gpt-4o-mini'),
   GEMINI_API_KEY: z.string().optional(),
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
@@ -39,6 +40,7 @@ const parsedEnv = envSchema.safeParse({
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+  OPENAI_MODEL: process.env.OPENAI_MODEL,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
@@ -62,6 +64,7 @@ export const env = {
   jwtSecret: values.JWT_SECRET,
   jwtExpiresIn: values.JWT_EXPIRES_IN,
   openaiApiKey: values.OPENAI_API_KEY || '',
+  openaiModel: values.OPENAI_MODEL,
   geminiApiKey: values.GEMINI_API_KEY || '',
   cloudinary: {
     cloudName: values.CLOUDINARY_CLOUD_NAME || '',
