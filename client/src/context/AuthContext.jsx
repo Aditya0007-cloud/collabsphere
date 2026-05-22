@@ -12,18 +12,22 @@ export const AuthProvider = ({ children }) => {
   });
   const [token, setToken] = useState(() => localStorage.getItem('collabsphere_token'));
   const [demoMode, setDemoMode] = useState(() => localStorage.getItem('collabsphere_demo') === 'true');
-  const [loading, setLoading] = useState(Boolean(localStorage.getItem('collabsphere_token')));
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const hydrate = async () => {
-      if (!token || demoMode) {
+      if (demoMode) {
         setLoading(false);
         return;
       }
 
       try {
-        const { data } = await api.get('/auth/me');
+        const { data } = token ? await api.get('/auth/me') : await api.post('/auth/refresh');
         setUser(data.user);
+        if (data.token) {
+          setToken(data.token);
+          localStorage.setItem('collabsphere_token', data.token);
+        }
         localStorage.setItem('collabsphere_user', JSON.stringify(data.user));
       } catch {
         localStorage.removeItem('collabsphere_token');
@@ -77,8 +81,19 @@ export const AuthProvider = ({ children }) => {
     setDemoMode(false);
   };
 
+  const logoutAll = async () => {
+    if (token && !demoMode) {
+      try {
+        await api.post('/auth/logout-all');
+      } catch {
+        // Local state is still cleared.
+      }
+    }
+    await logout();
+  };
+
   const value = useMemo(
-    () => ({ user, token, demoMode, loading, login, signup, launchDemo, logout, setUser }),
+    () => ({ user, token, demoMode, loading, login, signup, launchDemo, logout, logoutAll, setUser }),
     [user, token, demoMode, loading]
   );
 

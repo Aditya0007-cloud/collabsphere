@@ -19,7 +19,7 @@ export default function AuthPage() {
   const [success, setSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/app" replace />;
 
   const submit = async (event) => {
     event.preventDefault();

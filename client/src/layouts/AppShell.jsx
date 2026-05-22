@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, BrainCircuit, CalendarClock, CheckSquare, ChevronLeft, ChevronRight, Files, LayoutDashboard, LogOut, Menu, MessageSquareText, Moon, Search, Settings, Sun, UsersRound, X } from 'lucide-react';
+import { Bell, BrainCircuit, CalendarClock, CheckSquare, ChevronLeft, ChevronRight, Files, Inbox, LayoutDashboard, LogOut, Menu, MessageSquareText, Moon, Search, Settings, Sun, UsersRound, X } from 'lucide-react';
+import { useState } from 'react';
 import { cx } from '../utils/format';
 
 const navItems = [
@@ -24,8 +25,11 @@ export default function AppShell({
   darkMode,
   setDarkMode,
   unread,
+  notifications = [],
+  onMarkNotificationsRead,
   logout
 }) {
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const showSidebarText = !collapsed || mobileOpen;
   const activeItem = navItems.find((item) => item.id === activeView) || navItems[0];
 
@@ -123,10 +127,56 @@ export default function AppShell({
               </div>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <button className="icon-btn relative" aria-label="Notifications" onClick={() => setActiveView('activity')}>
-                <Bell className="h-5 w-5" />
-                {unread > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[11px] font-bold text-white">{unread}</span>}
-              </button>
+              <div className="relative">
+                <button className="icon-btn relative" aria-label="Notifications" onClick={() => setNotificationsOpen((open) => !open)}>
+                  <Bell className="h-5 w-5" />
+                  {unread > 0 && <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[11px] font-bold text-white">{unread}</span>}
+                </button>
+                <AnimatePresence>
+                  {notificationsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.96 }}
+                      className="absolute right-0 top-12 z-50 w-[min(360px,calc(100vw-2rem))] rounded-3xl border border-slate-200 bg-white p-3 shadow-glow dark:border-white/10 dark:bg-slate-950"
+                    >
+                      <div className="flex items-center justify-between gap-3 px-2 py-2">
+                        <div>
+                          <p className="font-bold">Notifications</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{unread} unread updates</p>
+                        </div>
+                        <button className="btn-soft px-3 py-1.5" onClick={onMarkNotificationsRead}>Mark read</button>
+                      </div>
+                      <div className="mt-2 max-h-80 space-y-2 overflow-y-auto">
+                        {notifications.length === 0 && (
+                          <div className="rounded-2xl border border-dashed border-slate-200 p-5 text-center dark:border-white/10">
+                            <Inbox className="mx-auto mb-3 h-6 w-6 text-slate-400" />
+                            <p className="text-sm font-semibold">No notifications yet</p>
+                          </div>
+                        )}
+                        {notifications.slice(0, 6).map((item) => (
+                          <button
+                            key={item._id}
+                            onClick={() => {
+                              setActiveView('activity');
+                              setNotificationsOpen(false);
+                            }}
+                            className="block w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-left transition hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-bold">{item.title}</p>
+                                <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500 dark:text-slate-400">{item.body}</p>
+                              </div>
+                              {!item.read && <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-rose-500" />}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <button className="icon-btn" onClick={() => setDarkMode(!darkMode)} aria-label="Toggle theme">
                 {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </button>

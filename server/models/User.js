@@ -17,10 +17,11 @@ const userSchema = new mongoose.Schema(
     avatar: { type: String, default: '' },
     bio: { type: String, default: 'Building better work with the team.', maxlength: 280 },
     skills: [{ type: String, trim: true }],
-    role: { type: String, enum: ['member', 'admin'], default: 'member' },
+    role: { type: String, enum: ['admin', 'manager', 'member'], default: 'member' },
     status: { type: String, enum: ['online', 'offline', 'busy'], default: 'offline' },
     lastSeen: { type: Date, default: Date.now },
     lastLoginAt: { type: Date },
+    refreshTokenVersion: { type: Number, default: 0 },
     stats: {
       tasksCompleted: { type: Number, default: 0 },
       messagesSent: { type: Number, default: 0 },

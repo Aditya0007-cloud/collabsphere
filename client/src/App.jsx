@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
+import LandingPage from './pages/LandingPage';
 import WorkspacePage from './pages/WorkspacePage';
 import { useAuth } from './context/AuthContext';
 
@@ -18,15 +19,17 @@ const Protected = ({ children }) => {
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
       <Route
-        path="/*"
+        path="/app/*"
         element={
           <Protected>
             <WorkspacePage />
           </Protected>
         }
       />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

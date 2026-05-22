@@ -14,7 +14,7 @@ import { getSocket } from '../services/socket';
 import { demoActivities, demoFiles, demoMessages, demoNotifications, demoTasks, demoWorkspace } from '../utils/demoData';
 
 export default function WorkspacePage() {
-  const { user, token, demoMode, logout, setUser } = useAuth();
+  const { user, token, demoMode, logout, logoutAll, setUser } = useAuth();
   const [activeView, setActiveView] = useState('dashboard');
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -362,6 +362,7 @@ export default function WorkspacePage() {
           onCreateWorkspace={handleCreateWorkspace}
           onJoinWorkspace={handleJoinWorkspace}
           onUpdateProfile={handleUpdateProfile}
+          onLogoutAll={logoutAll}
         />
       );
     }
@@ -381,6 +382,8 @@ export default function WorkspacePage() {
       darkMode={darkMode}
       setDarkMode={setDarkMode}
       unread={unread}
+      notifications={notifications}
+      onMarkNotificationsRead={handleMarkNotificationsRead}
       logout={logout}
     >
       <div className="space-y-4">

@@ -9,7 +9,8 @@ export default function SettingsPanel({
   onSwitchWorkspace,
   onCreateWorkspace,
   onJoinWorkspace,
-  onUpdateProfile
+  onUpdateProfile,
+  onLogoutAll
 }) {
   const [copied, setCopied] = useState(false);
   const [newWorkspace, setNewWorkspace] = useState({ name: '', description: '' });
@@ -128,6 +129,7 @@ export default function SettingsPanel({
               <textarea className="field-light min-h-28 resize-none" value={profile.bio} onChange={(event) => setProfile({ ...profile, bio: event.target.value })} placeholder="Bio" />
               <input className="field-light" value={profile.skills} onChange={(event) => setProfile({ ...profile, skills: event.target.value })} placeholder="Skills separated by commas" />
               <button className="btn-primary">Save profile</button>
+              <button type="button" className="btn-soft" onClick={onLogoutAll}>Logout from all devices</button>
             </div>
           </form>
         </div>

@@ -2,7 +2,7 @@
 
 ![CollabSphere banner](https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80)
 
-CollabSphere is a portfolio-grade MERN SaaS workspace inspired by Slack, Notion, Trello, Linear, and Discord. It combines realtime team chat, Kanban execution, file sharing, activity timelines, notifications, analytics dashboards, profile management, and AI productivity tools in one polished collaboration product.
+CollabSphere is a portfolio-grade MERN SaaS workspace inspired by Slack, Notion, Trello, Linear, Monday.com, and Discord. It combines a public SaaS landing page, authenticated workspaces, realtime chat, Kanban execution, file sharing, activity timelines, notifications, analytics dashboards, profile management, and AI productivity tools in one polished collaboration product.
 
 ## Tech Stack
 
@@ -12,30 +12,21 @@ CollabSphere is a portfolio-grade MERN SaaS workspace inspired by Slack, Notion,
 ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb&logoColor=fff)
 ![Socket.IO](https://img.shields.io/badge/Socket.IO-Realtime-010101?logo=socket.io&logoColor=fff)
 ![JWT](https://img.shields.io/badge/Auth-JWT%20%2B%20bcrypt-f43f5e)
+![Render](https://img.shields.io/badge/Deploy-Render-46E3B7)
 
 ## Features
 
-- JWT signup, login, logout, protected routes, bcrypt password hashing, persistent sessions
-- Team workspaces with invite codes, members, roles, settings, and workspace themes
+- Public startup-style landing page with product preview, pricing, CTA, responsive nav, and dark mode
+- JWT signup, login, logout, protected routes, bcrypt password hashing, strict email uniqueness, and persistent sessions
+- Team workspaces with invite codes, members, role-ready schema, settings, and workspace switching
 - Socket.IO realtime chat with group channels, typing events, presence, pinned-message support, mentions, and notifications
-- Trello-style Kanban board with drag and drop, priorities, due dates, assignees, labels, comments-ready schema, progress tracking, and live task updates
-- File hub for images, documents, previews, downloads, local uploads, and link sharing
+- Trello-style Kanban board with drag and drop, priorities, due dates, assignees, labels, comments, progress tracking, and live task updates
+- File hub for images, documents, previews, downloads, Cloudinary-ready uploads, and link sharing
 - Activity timeline for task, message, file, join, and workspace events
-- Realtime notifications for task assignments, mentions, files, deadlines, and system events
-- User profile with avatar, bio, skills, activity stats, and team memberships
 - AI summarizer, AI smart task generator, and productivity insights with no-key fallback logic
 - Analytics dashboard with active users, task metrics, priority distribution, productivity charts, recent activity, and deadlines
-- Dark/light mode, collapsible sidebar, mobile navigation, loading skeletons, glass UI, Framer Motion transitions, and responsive layouts
-
-## Screenshots
-
-Add screenshots after running locally:
-
-- `screenshots/auth.png` - futuristic authentication and demo entry
-- `screenshots/dashboard.png` - analytics dashboard with charts
-- `screenshots/chat.png` - realtime channel with presence
-- `screenshots/kanban.png` - Trello-style task board
-- `screenshots/ai-studio.png` - AI summarizer and smart task planner
+- Dark/light mode, collapsible sidebar, mobile navigation, loading skeletons, empty states, glass UI, Framer Motion transitions, and responsive layouts
+- Backend hardening with Helmet, CORS controls, rate limiting, Morgan logging, centralized error handling, and Zod environment validation
 
 ## Architecture
 
@@ -43,14 +34,14 @@ Add screenshots after running locally:
 client/
   src/
     components/      Reusable product surfaces and widgets
-    pages/           Auth and workspace experiences
+    pages/           Landing, auth, and workspace experiences
     layouts/         App shell, sidebar, topbar
     context/         Auth/session state
     services/        Axios API and Socket.IO client
     utils/           Demo data and formatting helpers
 
 server/
-  config/            Environment and MongoDB connection
+  config/            Environment validation, MongoDB, Cloudinary
   controllers/       REST API business logic
   middleware/        Auth, validation, uploads, errors
   models/            Mongoose schemas
@@ -61,9 +52,11 @@ server/
   scripts/           Demo seed script
 ```
 
+See [Architecture Notes](docs/ARCHITECTURE.md) for a deeper system overview.
+
 ## API Overview
 
-Base URL: `http://localhost:5001/api`
+Base URL: `http://localhost:5011/api`
 
 | Area | Endpoints |
 | --- | --- |
@@ -81,20 +74,23 @@ Socket events include `workspace:join`, `message:send`, `message:new`, `typing:s
 ## Local Setup
 
 ```bash
-git clone <your-repo-url>
-cd collaboration\ platform
+git clone https://github.com/aditya0007-cloud/collabsphere.git
+cd collabsphere
 npm run install:all
 cp server/.env.example server/.env
 cp client/.env.example client/.env
 ```
 
-Start MongoDB locally, then update `server/.env`:
+Use MongoDB Atlas or local MongoDB, then update `server/.env`:
 
 ```env
-MONGO_URI=mongodb://127.0.0.1:27017/collabsphere
+PORT=5011
+NODE_ENV=development
+MONGO_URI=mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/collabsphere?retryWrites=true&w=majority&appName=Cluster0
 JWT_SECRET=replace-with-a-long-random-secret
+JWT_EXPIRES_IN=7d
 CLIENT_URL=http://localhost:5188
-CLIENT_ORIGINS=http://localhost:5188,https://your-vercel-app.vercel.app
+CLIENT_ORIGINS=http://localhost:5188
 ```
 
 Seed demo data:
@@ -119,44 +115,66 @@ aditya@collabsphere.dev
 Password123
 ```
 
-The frontend also includes a portfolio demo mode that works without MongoDB.
+## Render Deployment
 
-## Deployment
+### Backend Web Service
 
-### Frontend on Vercel
+Name: `collabsphere-api`  
+Root directory: `server`  
+Build command: `npm install`  
+Start command: `npm start`  
+Health check path: `/health`
 
-1. Import the repo in Vercel.
-2. Set root directory to `client`.
-3. Build command: `npm run build`.
-4. Output directory: `dist`.
-5. Add environment variables:
+Environment variables:
 
 ```env
-VITE_API_URL=https://your-render-api.onrender.com/api
-VITE_SOCKET_URL=https://your-render-api.onrender.com
+NODE_ENV=production
+MONGO_URI=mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/collabsphere?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=replace-with-a-long-random-production-secret
+JWT_EXPIRES_IN=7d
+CLIENT_URL=https://your-render-frontend.onrender.com
+CLIENT_ORIGINS=https://your-render-frontend.onrender.com
 ```
 
-### Backend on Render or Railway
+### Frontend Static Site
 
-1. Create a Node web service with root directory `server`.
-2. Build command: `npm install`.
-3. Start command: `npm start`.
-4. Add environment variables from `server/.env.example`.
-5. Set `CLIENT_URL` to your Vercel domain.
-6. Use MongoDB Atlas for `MONGO_URI`.
+Name: `collabsphere-web`  
+Root directory: `client`  
+Build command: `npm install && npm run build`  
+Publish directory: `dist`
+
+Environment variables:
+
+```env
+VITE_API_URL=https://your-render-backend.onrender.com/api
+VITE_SOCKET_URL=https://your-render-backend.onrender.com
+```
+
+## Screenshots
+
+Add screenshots after deploying:
+
+- `screenshots/landing.png` - public SaaS homepage
+- `screenshots/auth.png` - login/signup flow
+- `screenshots/dashboard.png` - analytics dashboard
+- `screenshots/chat.png` - realtime channel with presence
+- `screenshots/kanban.png` - task board
+- `screenshots/ai-studio.png` - AI summarizer and smart planner
 
 ## Production Notes
 
-- CORS is environment-driven through `CLIENT_URL`.
+- CORS is environment-driven through `CLIENT_URL` and `CLIENT_ORIGINS`.
 - JWT secret and Mongo URI are required in production.
-- File uploads use local storage in development and automatically use Cloudinary in production when Cloudinary env keys are set.
+- Environment variables are validated with Zod on backend startup.
+- File uploads use local storage in development and Cloudinary in production when Cloudinary env keys are set.
 - AI features include deterministic fallback responses; OpenAI/Gemini can be wired through `server/services/aiService.js`.
 - `client/vercel.json`, `server/render.yaml`, and `server/Procfile` are included for deployment readiness.
 
 ## Future Roadmap
 
+- Refresh token rotation with HTTP-only cookies
 - Google OAuth and SSO
-- Cloudinary upload adapter
+- dnd-kit sortable Kanban columns
 - Video/audio meeting rooms with screen sharing
 - Calendar integrations and deadline reminders
 - Markdown editor with slash commands
@@ -165,4 +183,6 @@ VITE_SOCKET_URL=https://your-render-api.onrender.com
 
 ## LinkedIn-Ready Description
 
-Built **CollabSphere**, a full-stack real-time team collaboration SaaS using React, Tailwind CSS, Framer Motion, Node.js, Express, MongoDB, Mongoose, JWT, bcrypt, and Socket.IO. The platform includes authenticated workspaces, realtime chat, presence, Kanban task management, file sharing, activity timelines, notifications, AI-powered summaries and task planning, analytics dashboards, dark/light mode, responsive design, and deployment-ready configuration for Vercel and Render.
+Built **CollabSphere**, a full-stack real-time team collaboration SaaS using React, Tailwind CSS, Framer Motion, Node.js, Express, MongoDB Atlas, Mongoose, JWT, bcrypt, Socket.IO, Recharts, Cloudinary-ready uploads, and Render. The platform includes a startup-style landing page, authenticated workspaces, realtime chat, presence, Kanban task management, file sharing, activity timelines, notifications, AI-powered summaries and task planning, analytics dashboards, dark/light mode, responsive design, and production deployment configuration.
+
+See [LinkedIn Showcase Kit](docs/LINKEDIN_SHOWCASE.md) for project descriptions and resume bullets.
