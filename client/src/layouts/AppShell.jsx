@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { Bell, BrainCircuit, CalendarClock, CheckSquare, ChevronLeft, ChevronRight, Files, Inbox, LayoutDashboard, LogOut, Menu, MessageSquareText, Moon, Search, Settings, Sun, UsersRound, X } from 'lucide-react';
+import { Bell, BrainCircuit, CalendarClock, CheckSquare, ChevronLeft, ChevronRight, Files, Inbox, Keyboard, LayoutDashboard, LogOut, Menu, MessageSquareText, Moon, Search, Settings, Sparkles, Sun, UsersRound, X } from 'lucide-react';
 import { useState } from 'react';
 import { cx } from '../utils/format';
 
@@ -31,6 +31,7 @@ export default function AppShell({
   logout
 }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [tourVisible, setTourVisible] = useState(() => localStorage.getItem('collabsphere_tour_seen') !== 'true');
   const showSidebarText = !collapsed || mobileOpen;
   const activeItem = navItems.find((item) => item.id === activeView) || navItems[0];
 
@@ -197,7 +198,49 @@ export default function AppShell({
               </div>
             </div>
           </header>
-          <main className="min-w-0 flex-1 p-3 pb-24 sm:p-6 sm:pb-6">{children}</main>
+          <main className="min-w-0 flex-1 p-3 pb-24 sm:p-6 sm:pb-6">
+            <AnimatePresence>
+              {tourVisible && (
+                <motion.div
+                  initial={{ opacity: 0, y: -12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  className="mb-4 overflow-hidden rounded-3xl border border-cyan-200 bg-white/85 shadow-panel backdrop-blur-2xl dark:border-cyan-400/20 dark:bg-slate-950/70"
+                >
+                  <div className="grid gap-4 p-4 lg:grid-cols-[1fr_auto] lg:items-center">
+                    <div className="flex items-start gap-3">
+                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-slate-950 text-white dark:bg-white dark:text-slate-950">
+                        <Sparkles className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-bold">Welcome to the CollabSphere demo workspace</p>
+                        <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                          Use Cmd/Ctrl+K for the command palette, Alt+1-6 to switch views, and the floating AI button for workspace recommendations.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button className="btn-soft" onClick={onOpenCommandPalette}>
+                        <Keyboard className="h-4 w-4" />
+                        Open Cmd+K
+                      </button>
+                      <button
+                        className="icon-btn"
+                        aria-label="Dismiss walkthrough"
+                        onClick={() => {
+                          localStorage.setItem('collabsphere_tour_seen', 'true');
+                          setTourVisible(false);
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            {children}
+          </main>
           <nav className="fixed bottom-3 left-3 right-3 z-30 grid grid-cols-5 gap-1 rounded-3xl border border-slate-200/80 bg-white/90 p-2 shadow-glow backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/90 lg:hidden">
             {navItems.slice(0, 5).map((item) => {
               const Icon = item.icon;

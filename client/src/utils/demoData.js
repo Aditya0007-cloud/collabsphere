@@ -27,13 +27,18 @@ export const demoTasks = [
   { _id: 't2', title: 'Polish realtime typing indicators', description: 'Presence-aware channel status with throttled socket events.', status: 'in-progress', priority: 'medium', dueDate: '2026-05-25', progress: 58, labels: ['Realtime', 'UX'], assignees: [demoWorkspace.members[2].user] },
   { _id: 't3', title: 'Review file preview security rules', description: 'Harden mime filtering and public download behavior.', status: 'review', priority: 'urgent', dueDate: '2026-05-22', progress: 86, labels: ['Security'], assignees: [demoWorkspace.members[0].user] },
   { _id: 't4', title: 'Launch productivity insights dashboard', description: 'Charts, activity density, and AI-generated suggestions.', status: 'completed', priority: 'high', dueDate: '2026-05-19', progress: 100, labels: ['AI', 'Analytics'], assignees: [demoWorkspace.members[3].user] },
-  { _id: 't5', title: 'Create mobile navigation pass', description: 'Responsive panels, bottom actions, and compact workspace switcher.', status: 'todo', priority: 'medium', dueDate: '2026-05-28', progress: 10, labels: ['Mobile'], assignees: [demoWorkspace.members[1].user] }
+  { _id: 't5', title: 'Create mobile navigation pass', description: 'Responsive panels, bottom actions, and compact workspace switcher.', status: 'todo', priority: 'medium', dueDate: '2026-05-28', progress: 10, labels: ['Mobile'], assignees: [demoWorkspace.members[1].user] },
+  { _id: 't6', title: 'Record recruiter product walkthrough', description: 'Capture landing, auth, dashboard, chat, board, AI assistant, and deployment story.', status: 'in-progress', priority: 'high', dueDate: '2026-05-26', progress: 62, labels: ['Portfolio', 'Demo'], assignees: [demoWorkspace.members[0].user] },
+  { _id: 't7', title: 'Add onboarding checklist copy', description: 'Make first-run guidance feel crisp without blocking experienced users.', status: 'review', priority: 'medium', dueDate: '2026-05-23', progress: 78, labels: ['Onboarding', 'UX'], assignees: [demoWorkspace.members[3].user] },
+  { _id: 't8', title: 'Prepare Render deployment QA notes', description: 'Verify env variables, health check, CORS, refresh cookies, and frontend API URL.', status: 'completed', priority: 'medium', dueDate: '2026-05-20', progress: 100, labels: ['DevOps'], assignees: [demoWorkspace.members[2].user] }
 ];
 
 export const demoMessages = [
   { _id: 'm1', sender: demoWorkspace.members[1].user, content: 'The invite flow API is ready. I added role defaults and activity logging.', channel: 'general', createdAt: new Date(Date.now() - 1000 * 60 * 42).toISOString(), pinned: true },
   { _id: 'm2', sender: demoWorkspace.members[2].user, content: '@Aditya can you check the typing event debounce before the demo?', channel: 'general', createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString() },
-  { _id: 'm3', sender: demoUser, content: 'Yes. I will validate it with two sessions and then update the release notes.', channel: 'general', createdAt: new Date(Date.now() - 1000 * 60 * 8).toISOString() }
+  { _id: 'm3', sender: demoWorkspace.members[3].user, content: 'Dashboard screenshots look much stronger with the new focus heatmap and deadline section.', channel: 'general', createdAt: new Date(Date.now() - 1000 * 60 * 14).toISOString() },
+  { _id: 'm4', sender: demoUser, content: 'Yes. I will validate it with two sessions and then update the release notes.', channel: 'general', createdAt: new Date(Date.now() - 1000 * 60 * 8).toISOString() },
+  { _id: 'm5', sender: demoWorkspace.members[1].user, content: 'For the recruiter demo, lead with command palette, realtime chat, Kanban, and AI assistant. It tells the product story quickly.', channel: 'general', createdAt: new Date(Date.now() - 1000 * 60 * 3).toISOString() }
 ];
 
 export const demoFiles = [
@@ -45,10 +50,12 @@ export const demoActivities = [
   { _id: 'a1', type: 'task_completed', title: 'Lina completed "Launch productivity insights dashboard"', actor: demoWorkspace.members[3].user, createdAt: new Date(Date.now() - 1000 * 60 * 35).toISOString() },
   { _id: 'a2', type: 'message_sent', title: 'Maya sent a message in #general', actor: demoWorkspace.members[1].user, createdAt: new Date(Date.now() - 1000 * 60 * 70).toISOString() },
   { _id: 'a3', type: 'file_uploaded', title: 'Aditya shared Sprint-Roadmap.pdf', actor: demoWorkspace.members[0].user, createdAt: new Date(Date.now() - 1000 * 60 * 90).toISOString() },
-  { _id: 'a4', type: 'member_joined', title: 'Rohan joined NovaOps Command Center', actor: demoWorkspace.members[2].user, createdAt: new Date(Date.now() - 1000 * 60 * 260).toISOString() }
+  { _id: 'a4', type: 'task_updated', title: 'Rohan moved "Prepare Render deployment QA notes" to Completed', actor: demoWorkspace.members[2].user, createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString() },
+  { _id: 'a5', type: 'member_joined', title: 'Rohan joined NovaOps Command Center', actor: demoWorkspace.members[2].user, createdAt: new Date(Date.now() - 1000 * 60 * 260).toISOString() }
 ];
 
 export const demoNotifications = [
   { _id: 'n1', type: 'mention', title: 'Rohan mentioned you', body: 'Can you check the typing event debounce?', read: false, createdAt: new Date().toISOString() },
-  { _id: 'n2', type: 'task', title: 'Review due tomorrow', body: 'File preview security rules needs approval.', read: false, createdAt: new Date(Date.now() - 1000 * 60 * 50).toISOString() }
+  { _id: 'n2', type: 'task', title: 'Review due tomorrow', body: 'File preview security rules needs approval.', read: false, createdAt: new Date(Date.now() - 1000 * 60 * 50).toISOString() },
+  { _id: 'n3', type: 'ai', title: 'AI found a launch risk', body: 'Two high-priority tasks are still outside Completed before showcase day.', read: true, createdAt: new Date(Date.now() - 1000 * 60 * 80).toISOString() }
 ];

@@ -56,9 +56,20 @@ export default function WorkspacePage() {
 
   useEffect(() => {
     const onKeyDown = (event) => {
+      const target = event.target;
+      const isTyping = target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable;
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setCommandOpen((open) => !open);
+      }
+      if (!isTyping && event.altKey && /^[1-6]$/.test(event.key)) {
+        event.preventDefault();
+        const views = ['dashboard', 'chat', 'tasks', 'files', 'activity', 'ai'];
+        setActiveView(views[Number(event.key) - 1]);
+      }
+      if (!isTyping && event.key === '?') {
+        event.preventDefault();
+        setAssistantOpen((open) => !open);
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -469,10 +480,20 @@ export default function WorkspacePage() {
   const content = () => {
     if (loading) {
       return (
-        <div className="grid gap-4 xl:grid-cols-3">
-          <Skeleton className="h-56" />
-          <Skeleton className="h-56" />
-          <Skeleton className="h-56" />
+        <div className="space-y-5">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Skeleton key={index} className="h-36" />
+            ))}
+          </div>
+          <div className="grid gap-5 xl:grid-cols-[1.35fr_.65fr]">
+            <Skeleton className="h-96" />
+            <Skeleton className="h-96" />
+          </div>
+          <div className="grid gap-5 xl:grid-cols-[.75fr_1.25fr]">
+            <Skeleton className="h-80" />
+            <Skeleton className="h-80" />
+          </div>
         </div>
       );
     }

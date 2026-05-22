@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Github, LockKeyhole, Sparkles, UsersRound, Workflow } from 'lucide-react';
+import { ArrowRight, Github, LockKeyhole, PlayCircle, Sparkles, UsersRound, Workflow } from 'lucide-react';
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -53,6 +53,13 @@ export default function AuthPage() {
     }
   };
 
+  const fillSeededDemo = () => {
+    setMode('login');
+    setForm({ name: '', email: 'aditya@collabsphere.dev', password: 'Password123' });
+    setError('');
+    setSuccess('Seeded demo credentials filled. Use this only if you ran the demo seed on your database.');
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#070b14] text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(34,211,238,.22),transparent_30%),radial-gradient(circle_at_80%_16%,rgba(244,63,94,.18),transparent_26%),linear-gradient(135deg,rgba(79,70,229,.20),transparent_38%)]" />
@@ -91,7 +98,7 @@ export default function AuthPage() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="rounded-[2rem] border border-white/10 bg-white/[.08] p-6 shadow-glow backdrop-blur-2xl">
+        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="rounded-[2rem] border border-white/10 bg-white/[.08] p-5 shadow-glow backdrop-blur-2xl sm:p-6">
           <div className="mb-6 flex rounded-2xl bg-slate-950/60 p-1">
             {['login', 'signup'].map((item) => (
               <button
@@ -146,10 +153,27 @@ export default function AuthPage() {
             </button>
           </form>
 
-          <button onClick={launchDemo} className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/10 px-4 py-3 font-semibold text-white transition hover:bg-white/15">
-            <Github className="h-4 w-4" />
-            Launch portfolio demo
-          </button>
+          <div className="mt-4 rounded-3xl border border-cyan-300/20 bg-cyan-300/10 p-4">
+            <div className="flex items-start gap-3">
+              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-cyan-300/15 text-cyan-100">
+                <PlayCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="font-bold text-cyan-50">Recruiter demo mode</p>
+                <p className="mt-1 text-sm leading-6 text-cyan-100/75">Open a polished sample workspace instantly with realistic tasks, chat, files, activity, notifications, and AI suggestions.</p>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <button onClick={launchDemo} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 font-bold text-slate-950 transition hover:-translate-y-0.5 hover:bg-cyan-50">
+                <Github className="h-4 w-4" />
+                Launch demo
+              </button>
+              <button type="button" onClick={fillSeededDemo} className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 font-bold text-white transition hover:-translate-y-0.5 hover:bg-white/15">
+                Fill seeded login
+              </button>
+            </div>
+            <p className="mt-3 text-xs text-cyan-100/65">Seeded login: aditya@collabsphere.dev / Password123</p>
+          </div>
         </motion.div>
       </section>
     </main>
